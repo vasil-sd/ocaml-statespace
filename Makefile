@@ -29,5 +29,5 @@ uninstall:
 	dune uninstall
 
 clean:
-	rm -rf _build *.install
+	rm -rf _build example/_build lib/_build *.install
 
