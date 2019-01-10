@@ -1,7 +1,7 @@
 PROJECT=statespace
 GITHUB_URL=https://github.com/vasil-sd/ocaml-$(PROJECT)
 
-.PHONY: all build clean release
+.PHONY: all build clean release test
 
 release:
 	git push --tags
@@ -16,6 +16,9 @@ release:
 
 build:
 	dune build @install
+
+test:
+	dune runtest
 
 all: build
 
