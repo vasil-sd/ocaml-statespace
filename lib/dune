@@ -1,0 +1,13 @@
+(library
+ (modules 
+    fingerprint
+    lazylist_ext
+    lazylist_infix
+    lazylist
+    memoization
+    search
+    state
+    strategy)
+  (name statespace)
+  (public_name statespace))
+
