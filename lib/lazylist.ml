@@ -38,3 +38,7 @@ let take n l =
     take (0, l)
 
 let init n f = generate f |> take n
+
+let rec iter f = function
+  | Nil -> ()
+  | Cons (lazy x, lazy y) -> f x; iter f y

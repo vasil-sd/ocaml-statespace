@@ -10,3 +10,4 @@ val partition : ('a -> bool) -> 'a list -> 'a list * 'a list
 val generate : (unit -> 'a) -> 'a list
 val take : int -> 'a list -> 'a list
 val init : int -> (unit -> 'a) -> 'a list
+val iter : ('a -> unit) -> 'a list -> unit
