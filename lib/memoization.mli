@@ -9,28 +9,12 @@ module type T =
   end
 module type MK_T =
   functor
-    (S : State.T) (F : sig
-                         type state = S.t
-                         type t
-                         val calc : state -> t
-                         val compare : t -> t -> int
-                       end) ->
-    sig
-      type state = S.t
-      type t
-      val initial : unit -> t
-      val memoize : t -> state -> t
-      val is_memoized : t -> state -> bool
-    end
+    (S : State.T)
+    (F : FP_T with type state = S.t)
+    ->
+    (T with type state = S.t)
 module type MK_T_wo_FP =
-  functor (S : State.T) ->
-    sig
-      type state = S.t
-      type t
-      val initial : unit -> t
-      val memoize : t -> state -> t
-      val is_memoized : t -> state -> bool
-    end
+  functor (S : State.T) -> (T with type state = S.t)
 module Hash : MK_T
 module FpHash : MK_T
 module FpSet : MK_T

@@ -1,15 +1,22 @@
 open Lazy
 
-type 'a list = Nil | Cons of 'a Lazy.t * 'a list Lazy.t
+type 'a list = Nil
+             | Cons of 'a Lazy.t * 'a list Lazy.t
 
 type 'a t = 'a list
 
-let hd = function Cons (x, _) -> force x | Nil -> raise (Failure "hd")
+let hd = function
+  | Cons (x, _) -> force x
+  | Nil -> raise (Failure "hd")
 
-let tl = function Cons (_, (lazy x)) -> x | Nil -> raise (Failure "tl")
+let tl = function
+  | Cons (_, (lazy x)) -> x
+  | Nil -> raise (Failure "tl")
 
 let rec append a b =
-  match a with Nil -> b | Cons (x, y) -> Cons (x, lazy (append (force y) b))
+  match a with
+    | Nil -> b
+    | Cons (x, y) -> Cons (x, lazy (append (force y) b))
 
 let rec map f = function
   | Nil -> Nil
