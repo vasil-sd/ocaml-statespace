@@ -1,8 +1,25 @@
 open Statespace
 
 module Queens = struct
+  type state = int array
+
+  module FP  = struct
+    type state_t = state
+
+    type t = int64
+
+    open Array
+    open Int64
+
+    let calc x = fold_left (fun a x -> shift_left a 3 |> add (of_int x)) zero x
+
+    let compare = compare
+  end
+
   module State = struct
-    type t = int array
+    type t = state
+
+    module Fp = FP
 
     open Lazylist
     open Lazylist_infix
@@ -45,26 +62,15 @@ module Queens = struct
       !result
   end
 
-  module FP = struct
-    type state = State.t
-
-    type t = int64
-
-    open Array
-    open Int64
-
-    let calc x = fold_left (fun a x -> shift_left a 3 |> add (of_int x)) zero x
-
-    let compare = compare
-  end
+  module MState = Statespace.State.MemoFp(State)
 
   module S =
     Search.Make
-      (State)
-      (Strategy.Depth (State))
-      (Memoization.FpHash (State) (FP))
+      (MState)
+      (Strategy.Depth (MState))
+      (Memoization.FpHash (MState))
 end
 
 open Lazylist
 
-let () = Queens.S.solutions () |> iter Queens.State.print
+let () = Queens.S.solutions () |> map Queens.MState.to_state |> iter Queens.State.print

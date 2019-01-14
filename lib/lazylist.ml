@@ -1,13 +1,21 @@
 open Lazy
 
+(*
+module List = struct
+  type 'a t = 'a list
+end
+*)
+
 type 'a list = Nil
              | Cons of 'a Lazy.t * 'a list Lazy.t
 
 type 'a t = 'a list
 
-let hd = function
-  | Cons (x, _) -> force x
+let lhd = function
+  | Cons (x, _) -> x
   | Nil -> raise (Failure "hd")
+
+let hd l = force (lhd l)
 
 let tl = function
   | Cons (_, (lazy x)) -> x
@@ -49,3 +57,35 @@ let init n f = generate f |> take n
 let rec iter f = function
   | Nil -> ()
   | Cons (lazy x, lazy y) -> f x; iter f y
+(*
+let rec by_arrays_of n l =
+  if l = Nil then Nil
+  else
+    let idx = ref 0 in
+    let nl = ref l in
+    let form_array n = 
+      Array.init n (fun i -> 
+                     let r = lhd !nl in
+                       nl := tl !nl;
+                       idx := i;
+                       r)
+    in
+      Cons (lazy ( try form_array n
+                   with _ -> nl:= l; form_array (!idx + 1)),
+            lazy (by_arrays_of n !nl))
+
+
+let q = generate (fun () -> 3) |> take 6 |> by_arrays_of 5
+
+let a = hd q
+let b = hd (tl q)
+
+let rec by_lists_of : int -> 'a list -> 'a Lazy.t List.t list =
+  fun n l ->
+  let rec chunk = function
+    | (_, c, Nil) -> Cons (from_val c, lazy Nil)
+    | (i, c, m) when i = n -> Cons (from_val c, lazy (by_lists_of n m))
+    | (i, c, Cons (x, lazy y)) -> chunk (i+1, x :: c, y)
+  in
+    chunk (0, List.[], l)
+*)

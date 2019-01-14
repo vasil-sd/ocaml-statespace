@@ -3,6 +3,8 @@ GITHUB_URL=https://github.com/vasil-sd/ocaml-$(PROJECT)
 
 .PHONY: all build clean release test
 
+all: build
+
 release:
 	git push --tags
 	@ TAG=$$(git tag | tail -n 1); \
@@ -19,8 +21,6 @@ build:
 
 test:
 	dune runtest
-
-all: build
 
 install:
 	dune install

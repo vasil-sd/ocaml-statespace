@@ -1,13 +1,13 @@
 module type T =
   sig
-    type state
-    val solutions : unit -> state Lazylist.list
+    module State : State.T
+    val solutions : unit -> State.t Lazylist.list
   end
 module type MK_T =
   functor
     (S : State.T)
-    (ST : Strategy.T with type state = S.t)
-    (M : Memoization.T with type state = S.t)
+    (ST : Strategy.T with module State = S)
+    (M : Memoization.T with module State = S)
     ->
-    (T with type T = S.t)
+    (T with module State = S)
 module Make : MK_T

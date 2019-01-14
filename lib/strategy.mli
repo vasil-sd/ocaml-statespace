@@ -1,13 +1,13 @@
 module type T =
   sig
-    type state
+    module State : State.T
     type t
     val initial : unit -> t
     val strategy :
       t ->
-      state Lazylist.list -> state Lazylist.list -> t * state Lazylist.list
+      State.t Lazylist.list -> State.t Lazylist.list -> t * State.t Lazylist.list
   end
 module type MK_T =
-  functor (S : State.T) -> (T with type state = S.t)
+  functor (S : State.T) -> (T with module State = S)
 module Breadth : MK_T
 module Depth : MK_T

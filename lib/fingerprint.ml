@@ -1,19 +1,19 @@
 module type T = sig
-  type state
+  type state_t
   type t
 
-  val calc : state -> t
+  val calc : state_t -> t
   val compare : t -> t -> int
 end
 
-module type MK_T = functor (S : State.T) -> T with type state = S.t
+module type MK_T = functor (S : sig type t end) -> T with type state_t = S.t
 
 module None : MK_T =
 functor
-  (S : State.T)
+  (S : sig type t end)
   ->
   struct
-    type state = S.t
+    type state_t = S.t
     type t = unit
 
     let calc _ = ()
@@ -22,11 +22,11 @@ functor
 
 module Identity : MK_T =
 functor
-  (S : State.T)
+  (S : sig type t end)
   ->
   struct
-    type state = S.t
-    type t = S.t
+    type state_t = S.t
+    type t = state_t
 
     let calc x = x
     let compare = compare

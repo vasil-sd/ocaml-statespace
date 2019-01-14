@@ -1,32 +1,32 @@
 module type T = sig
   open Lazylist
-  type state
-  val solutions : unit -> state list
+  module State : State.T
+  val solutions : unit -> State.t list
 end
 
 module type MK_T =
   functor 
     (S: State.T)
-    (ST: Strategy.T with type state = S.t)
-    (M: Memoization.T with type state = S.t) ->
-    (T with type state = S.t)
+    (ST: Strategy.T with module State = S)
+    (M: Memoization.T with module State = S) ->
+    (T with module State = S)
 
 module Make : MK_T =
   functor 
     (S: State.T)
-    (ST: Strategy.T with type state = S.t)
-    (M: Memoization.T with type state = S.t) ->
+    (ST: Strategy.T with module State = S)
+    (M: Memoization.T with module State = S) ->
   struct
-    type state = S.t
+    module State = S
     let solutions () =
       let open! Lazylist in
-      let initial = S.initial () in
+      let initial = State.initial () in
       let memo = M.initial () |> ref in
       let rec all_solutions st = function
         | Nil -> Nil
         | Cons (lazy x, lazy y) ->
             let new_states = 
-              S.step x
+              State.step x
               |> filter (fun s -> not @@ M.is_memoized !memo s) 
             in
               memo := M.memoize !memo x;
@@ -34,5 +34,5 @@ module Make : MK_T =
                 Cons (Lazy.from_val x, lazy (all_solutions st s))
       in
         all_solutions (ST.initial ()) initial
-        |> filter S.is_solution
+        |> filter State.is_solution
   end
